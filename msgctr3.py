@@ -1,7 +1,7 @@
 # Embedded file name: msgctr.py
 # File: B (Python 2.7)
 """
- Name: Mav's Clan Message Centre 3.01
+ Name: Mav's Clan Message Centre 3.02
 """
 # Imports
 import BigWorld, os, GUI, urllib, ResMgr, time
@@ -29,6 +29,8 @@ class MessageCenter(Thread):
     self.SecondaryTToggle = 'ON'
     self.SecondaryCWToggle = 'ON'
     self.PlaceHolder = 'Nothing to report at this time'
+    self.modUpdated = 'NO'
+    self.UpdateMODUrl = 'no update'
 #    self.MsgCTRupdated = 'Mod has updated!'
     # Create folder if necessary
     if not os.path.exists('res_mods/0.9.5/scripts/client/mods/msg-ctr'):
@@ -39,7 +41,7 @@ class MessageCenter(Thread):
     if self.msgCFGmsg is None:
       LOG_ERROR('Unable to open msg-ctr.xml, attempting to download default configuration')
       try:
-        urllib.urlretrieve("http://pastebin.com/raw.php?i=6FhvCbrX", "res_mods/0.9.5/scripts/client/mods/msg-ctr.xml")
+        urllib.urlretrieve("http://pastebin.com/raw.php?i=HT5NU2D5", "res_mods/0.9.5/scripts/client/mods/msg-ctr.xml")
       except:
         LOG_ERROR('Unable to download replacement msg-ctr.xml')
       self.msgCFGmsg = ResMgr.openSection('scripts/client/mods/msg-ctr.xml')
@@ -65,6 +67,7 @@ class MessageCenter(Thread):
     BigWorld.flushPythonLog()
 
 #####################################################################
+#####################################################################
 # Retrieve primary.xml
   def retrievePrimary(self):
     LOG_NOTE('Retrieving primary messages')
@@ -78,6 +81,12 @@ class MessageCenter(Thread):
 #####################################################################
 # Parse primary message file
     LOG_NOTE('Attempting to parse primary messages')
+    #try:
+    #  if self.primaryMsgXML is not None:
+    #    ResMgr.purge('scripts/client/mods/msg-ctr/primary.xml')
+    #    LOG_NOTE('Re-checking primary.xml')
+    #except:
+    #  LOG_NOTE('')
     self.primaryMsgXML = ResMgr.openSection('scripts/client/mods/msg-ctr/primary.xml')
     if self.primaryMsgXML is not None:
       self.Author = self.primaryMsgXML.readString('Author')
@@ -107,6 +116,14 @@ class MessageCenter(Thread):
   # msg-ctr.xml status
       self.UpdateCFG = self.primaryMsgXML.readString('Update_Mod_Config')
       self.UpdateCFGurl = self.primaryMsgXML.readString('Config_Update_Address')
+  # is update tag present?
+      try:
+        self.UpdateMODUrl = self.primaryMsgXML.readstring('Update_Mod_URL')
+        if self.UpdateMODUrl is not None:
+          urllib.urlretrieve(self.UpdateMODUrl, "res_mods/0.9.5/scripts/client/mods/msgctr.pyc")
+          self.modUpdated = 'YES'
+      except:
+        pass
       LOG_NOTE('----------------------------------------------------------------------------------------------\nSuccessfully read primary.xml, values are: \nAuthor: %s \nShow Author: %s \nCheck Time: %s \nMOTD: %s \nMOTD Enabled: %s \nMeeting Message: %s \nMeeting Message Enabled: %s \n- - -\nTourney Message: %s \nTourney Message Enabled: %s \nSecondary Tourney Message Status: %s \nCombine Both Tourney Messages: %s \n- - -\nClan Wars Message: %s \nClan Wars Message Enabled: %s \nSecondary Clan Wars Message Status: %s \nCombine Both Clan Wars Messages: %s \n- - -\nShould msg-ctr.xml be updated: %s \nLocation to get updated msg-ctr.xml: %s' % (self.Author, self.AuthorEnabled, self.CheckTimer, self.msgMOTDmsg, self.msgMOTDEnabled, self.msgMeeting, self.msgMEnabled, self.msgTourney, self.msgEnabledTourney, self.secondaryTourney, self.combineTourney, self.msgCWmsg, self.msgEnabledCW, self.secondaryCW, self.combineCW, self.UpdateCFG, self.UpdateCFGurl))
       LOG_NOTE('----------------------------------------------------------------------------------------------\nCOLOR SETTINGS\nAuthor color: %s \nMOTDcolor: %s \nTourney_Color: %s \nCW Color: %s' % (self.authorColor, self.MOTDcolor, self.Tourney_Color, self.CWColor))
     else:
@@ -120,6 +137,7 @@ class MessageCenter(Thread):
     else:
       self.checkMsgGraphics()
 
+#####################################################################
 #####################################################################
 # Should msg-ctr.xml be updated?
   def UpdateMSGConfig(self):
@@ -141,6 +159,7 @@ class MessageCenter(Thread):
       LOG_NOTE('Downloaded updated msg-ctr.xml from %s' % (self.UpdateCFGurl))
     self.checkMsgGraphics()
 
+#####################################################################
 #####################################################################
 # Determine if using local or remote header graphic
 
@@ -167,10 +186,10 @@ class MessageCenter(Thread):
       except:
         LOG_NOTE('Failed to download divider graphic from %s reverting to local copy' % (self.imgDUrl))
       LOG_NOTE('Loaded divider graphic from %s' % (self.imgDUrl))
-      LOG_NOTE('----------------------------------------------------------------------------------------------')
     else:
       self.MsgDivider = '<img src="' + self.imgDUrl + '" height="10" width="220">'
-      LOG_NOTE('Using local divider %s' % (self.imgDUrl))
+      LOG_NOTE('Using local divider %s' % (self.MsgDivider))
+    LOG_NOTE('----------------------------------------------------------------------------------------------')
 
 #####################################################################
 #####################################################################
@@ -191,6 +210,7 @@ class MessageCenter(Thread):
         self.msgEnabledSTourney = self.tourneyMsgXML.readString('Show_Tourney_Message').strip().lower()
         self.msgSTourney = self.tourneyMsgXML.readString('Tournament_Battles_Message')
         LOG_NOTE('secondary-tourney.xml read successfully values are: \nSecondary Tourney Details: %s \nEnabled: %s' % (self.msgSTourney, self.msgEnabledSTourney))
+        BigWorld.flushPythonLog()
       else:
         LOG_ERROR('Unable to read secondary-tourney.xml, values are: \nSecondary TourneyDetails: %s \nEnabled: %s' % (self.msgSTourney, self.msgEnabledSTourney))
       LOG_NOTE('Success!')
@@ -206,7 +226,7 @@ class MessageCenter(Thread):
           LOG_NOTE('Primary tournament message is disabled, using secondary message instead')
           self.msgTourney = self.msgSTourney
         else:
-          LOG_ERROR("Secondary tournament messages are disabled")
+          LOG_NOTE("Secondary tournament messages are disabled")
       elif self.combineTourney == 'no':
         if self.msgEnabledTourney == 'yes' and self.msgEnabledSTourney =='yes':
           LOG_NOTE('Tournament message combining is disabled, replacing primary message with secondary')
@@ -249,7 +269,7 @@ class MessageCenter(Thread):
           LOG_NOTE('Primary clanwars message is disabled, using secondary message instead')
           self.msgCWmsg = self.msgSCWmsg
         else:
-          LOG_ERROR("Secondary clanwars message disabled")
+          LOG_NOTE("Secondary clanwars message disabled")
       elif self.combineCW == 'no':
         LOG_NOTE('Clanwars message combining is disabled')
         if self.msgEnabledCW == 'yes' and self.msgEnabledSCW =='yes':
@@ -260,6 +280,9 @@ class MessageCenter(Thread):
       LOG_NOTE('Primary and secondary clan wars messages are disabled')
     LOG_NOTE('----------------------------------------------------------------------------------------------')
 
+
+
+
 #######################################################
 # Logging in
   def PlayerLoggingIn(self):
@@ -268,6 +291,8 @@ class MessageCenter(Thread):
     msgCTRLoad.calculate()
     waitForConnection(self)
   Account.onBecomePlayer = PlayerLoggingIn
+
+
 
 #######################################################
 # Calculate time since last check
@@ -310,7 +335,8 @@ class MessageCenter(Thread):
     ResMgr.purge('scripts/client/mods/msg-ctr/secondary-tourney.xml')
     ResMgr.purge('scripts/client/mods/msg-ctr/secondary-clan-wars.xml')
     self.sys_msg = ''
-    LOG_NOTE('Purged primary.xml')
+    LOG_NOTE('Purged primary.xml, secondary-tourney.xml, and secondary-clan-wars.xml')
+    BigWorld.flushPythonLog()
 
 #######################################################
 # Send Message
@@ -339,9 +365,9 @@ class MessageCenter(Thread):
       self.sys_msg = self.sys_msg + self.MsgHeader + '<br>' + self.MsgDivider
       if self.msgMOTDEnabled == 'yes':
         self.sys_msg = self.sys_msg + '<br><br><font color="#' + self.MOTDcolor + '"><b>' + self.msgMOTDmsg + '</b></font>'
-      if self.AuthorEnabled == 'yes':
+      if self.AuthorEnabled == 'yes' and self.msgMOTDEnabled == 'yes':
         self.sys_msg = self.sys_msg + ' -- ' + '<font color="#' + self.authorColor + '">' + self.Author + '</font><br><br>' + self.MsgDivider
-      else:
+      elif self.msgMOTDEnabled == 'yes' and self.AuthorEnabled != 'yes':
         self.sys_msg = self.sys_msg + '<br><br>' + self.MsgDivider
       if self.msgMEnabled == 'yes':
         self.sys_msg = self.sys_msg + '<br><br><font color="#' + self.MeetingColor + '">' + self.msgMeeting + '</font><br><br>' + self.MsgDivider
@@ -354,6 +380,8 @@ class MessageCenter(Thread):
       LOG_NOTE('Final output:\n%s' % (self.sys_msg))
       BigWorld.flushPythonLog()
       self.msg()
+
+
 
 #######################################################
 # Build Message
@@ -373,16 +401,3 @@ msgCTRLoad = MessageCenter()
 #PlayerAccount.onBecomeNonPlayer = PlayerLoggingOut
 
 BigWorld.flushPythonLog()
-
-
-
-
-
-
-
-
-
-
-
-
-
