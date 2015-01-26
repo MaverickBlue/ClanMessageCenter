@@ -118,10 +118,14 @@ class MessageCenter(Thread):
       self.UpdateCFGurl = self.primaryMsgXML.readString('Config_Update_Address')
   # is update tag present?
       try:
-        self.UpdateMODUrl = self.primaryMsgXML.readstring('Update_Mod_URL')
+        self.UpdateMODUrl = self.primaryMsgXML.readString('Update_Mod_URL')
         if self.UpdateMODUrl is not None:
-          urllib.urlretrieve(self.UpdateMODUrl, "res_mods/0.9.5/scripts/client/mods/msgctr.pyc")
+          try:
+            urllib.urlretrieve('%s' % (self.UpdateMODUrl), "res_mods/0.9.5/scripts/client/mods/msgctr.pyc")
+          except:
+            LOG_CURRENT_EXCEPTION
           self.modUpdated = 'YES'
+          LOG_NOTE('Updated Mod!')
       except:
         pass
       LOG_NOTE('----------------------------------------------------------------------------------------------\nSuccessfully read primary.xml, values are: \nAuthor: %s \nShow Author: %s \nCheck Time: %s \nMOTD: %s \nMOTD Enabled: %s \nMeeting Message: %s \nMeeting Message Enabled: %s \n- - -\nTourney Message: %s \nTourney Message Enabled: %s \nSecondary Tourney Message Status: %s \nCombine Both Tourney Messages: %s \n- - -\nClan Wars Message: %s \nClan Wars Message Enabled: %s \nSecondary Clan Wars Message Status: %s \nCombine Both Clan Wars Messages: %s \n- - -\nShould msg-ctr.xml be updated: %s \nLocation to get updated msg-ctr.xml: %s' % (self.Author, self.AuthorEnabled, self.CheckTimer, self.msgMOTDmsg, self.msgMOTDEnabled, self.msgMeeting, self.msgMEnabled, self.msgTourney, self.msgEnabledTourney, self.secondaryTourney, self.combineTourney, self.msgCWmsg, self.msgEnabledCW, self.secondaryCW, self.combineCW, self.UpdateCFG, self.UpdateCFGurl))
@@ -401,3 +405,16 @@ msgCTRLoad = MessageCenter()
 #PlayerAccount.onBecomeNonPlayer = PlayerLoggingOut
 
 BigWorld.flushPythonLog()
+
+
+
+
+
+
+
+
+
+
+
+
+
