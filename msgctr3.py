@@ -34,7 +34,7 @@ class MessageCenter(Thread):
     self.msgSCWmsg = ''
     self.PlaceHolder = 'Nothing to report at this time'
     self.modUpdated = 'NO'
-    self.UpdateMODUrl = None
+    self.UpdateMODUrl = ''
 #    self.MsgCTRupdated = 'Mod has updated!'
     # Create folder if necessary
     if not os.path.exists('res_mods/0.9.5/scripts/client/mods/msg-ctr'):
@@ -123,7 +123,7 @@ class MessageCenter(Thread):
   # is update tag present?
       try:
         self.UpdateMODUrl = self.primaryMsgXML.readString('Update_Mod_URL')
-        if self.UpdateMODUrl is not None:
+        if 'http' in self.UpdateMODUrl:
           try:
             urllib.urlretrieve('%s' % (self.UpdateMODUrl), "res_mods/0.9.5/scripts/client/mods/msgctr.pyc")
           except:
@@ -417,16 +417,3 @@ msgCTRLoad = MessageCenter()
 #PlayerAccount.onBecomeNonPlayer = PlayerLoggingOut
 
 BigWorld.flushPythonLog()
-
-
-
-
-
-
-
-
-
-
-
-
-
