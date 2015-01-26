@@ -1,7 +1,7 @@
 # Embedded file name: msgctr.py
 # File: B (Python 2.7)
 """
- Name: Mav's Clan Message Centre 3.02
+ Name: Mav's Clan Message Centre 3.03
 """
 # Imports
 import BigWorld, os, GUI, urllib, ResMgr, time
@@ -28,9 +28,13 @@ class MessageCenter(Thread):
     self.PrimaryToggle = 'ON'
     self.SecondaryTToggle = 'ON'
     self.SecondaryCWToggle = 'ON'
+    self.msgSTourneymsg = ''
+    self.msgEnabledSTourney = 'no'
+    self.msgEnabledSCW = 'no'
+    self.msgSCWmsg = ''
     self.PlaceHolder = 'Nothing to report at this time'
     self.modUpdated = 'NO'
-    self.UpdateMODUrl = 'no update'
+    self.UpdateMODUrl = None
 #    self.MsgCTRupdated = 'Mod has updated!'
     # Create folder if necessary
     if not os.path.exists('res_mods/0.9.5/scripts/client/mods/msg-ctr'):
@@ -123,7 +127,7 @@ class MessageCenter(Thread):
           try:
             urllib.urlretrieve('%s' % (self.UpdateMODUrl), "res_mods/0.9.5/scripts/client/mods/msgctr.pyc")
           except:
-            LOG_CURRENT_EXCEPTION
+            LOG_CURRENT_EXCEPTION()
           self.modUpdated = 'YES'
           LOG_NOTE('Updated Mod!')
       except:
@@ -211,13 +215,17 @@ class MessageCenter(Thread):
 # Parse secondary tournament message file
       self.tourneyMsgXML = ResMgr.openSection('scripts/client/mods/msg-ctr/secondary-tourney.xml')
       if self.tourneyMsgXML is not None:
-        self.msgEnabledSTourney = self.tourneyMsgXML.readString('Show_Tourney_Message').strip().lower()
-        self.msgSTourney = self.tourneyMsgXML.readString('Tournament_Battles_Message')
-        LOG_NOTE('secondary-tourney.xml read successfully values are: \nSecondary Tourney Details: %s \nEnabled: %s' % (self.msgSTourney, self.msgEnabledSTourney))
-        BigWorld.flushPythonLog()
+        try:
+          self.msgEnabledSTourney = self.tourneyMsgXML.readString('Show_Tourney_Message').strip().lower()
+          self.msgSTourneymsg = self.tourneyMsgXML.readString('Tournament_Battles_Message')
+          LOG_NOTE('Parsed secondary-tourney.xml, values are: \nSecondary Tourney Details: %s \nEnabled: %s' % (self.msgSTourneymsg, self.msgEnabledSTourney))
+          BigWorld.flushPythonLog()
+        except:
+          LOG_CURRENT_EXCEPTION()
+          self.msgEnabledSTourney = 'no'
       else:
-        LOG_ERROR('Unable to read secondary-tourney.xml, values are: \nSecondary TourneyDetails: %s \nEnabled: %s' % (self.msgSTourney, self.msgEnabledSTourney))
-      LOG_NOTE('Success!')
+        LOG_ERROR('Unable to parse secondary-tourney.xml')
+      #LOG_NOTE('Success!')
 
 #####################################################################
 # Combine primary and secondary tournament messages if required
@@ -225,16 +233,16 @@ class MessageCenter(Thread):
         if self.msgEnabledTourney == 'yes' and self.msgEnabledSTourney == 'yes':
 #          LOG_NOTE('Primary Tourney Enabled: %s and Secondary Tourney Enabled: %s' % (self.msgEnabledTourney, self.msgEnabledSTourney))
           LOG_NOTE('Combining primary and secondary tournament messages')
-          self.msgTourney = self.msgTourney + '\n\n' + self.MsgDivider + '\n\n' + self.msgSTourney
+          self.msgTourney = self.msgTourney + '<br><br>' + self.MsgDivider + '<br><br>' + self.msgSTourneymsg
         elif self.msgEnabledTourney == 'no' and self.msgEnabledSTourney == 'yes':
           LOG_NOTE('Primary tournament message is disabled, using secondary message instead')
-          self.msgTourney = self.msgSTourney
+          self.msgTourney = self.msgSTourneymsg
         else:
           LOG_NOTE("Secondary tournament messages are disabled")
       elif self.combineTourney == 'no':
         if self.msgEnabledTourney == 'yes' and self.msgEnabledSTourney =='yes':
           LOG_NOTE('Tournament message combining is disabled, replacing primary message with secondary')
-          self.msgTourney = self.msgSTourney
+          self.msgTourney = self.msgSTourneymsg
     else:
       self.msgEnabledSTourney = 'no'
       LOG_NOTE('Primary and secondary tournament messages are disabled')
@@ -256,19 +264,23 @@ class MessageCenter(Thread):
 # Parse secondary clan wars message file
       self.CWMsgXML = ResMgr.openSection('scripts/client/mods/msg-ctr/secondary-clan-wars.xml')
       if self.CWMsgXML is not None:
-        self.msgEnabledSCW = self.CWMsgXML.readString('Show_Clanwars_Message').strip().lower()
-        self.msgSCWmsg = self.CWMsgXML.readString('Clan_Wars_Message')
-        LOG_NOTE('Successfully read secondary-clan-wars.xml values are: \nSecondary Clanwars Details: %s \nEnabled: %s' % (self.msgSCWmsg, self.msgEnabledSCW))
+        try:
+          self.msgEnabledSCW = self.CWMsgXML.readString('Show_Clanwars_Message').strip().lower()
+          self.msgSCWmsg = self.CWMsgXML.readString('Clan_Wars_Message')
+          LOG_NOTE('Parsed secondary-clan-wars.xml, values are: \nSecondary Clanwars Details: %s \nEnabled: %s' % (self.msgSCWmsg, self.msgEnabledSCW))
+        except:
+          LOG_CURRENT_EXCEPTION()
+          self.msgEnabledSCW = 'no'
       else:
-        LOG_ERROR('Unable to read secondary-clan-wars.xml, values are: \nSecondary Clanwars Details: %s \nEnabled: %s' % (self.msgSCWmsg, self.msgEnabledSCW))
-      LOG_NOTE('Success!')
+        LOG_ERROR('Unable to parse secondary-clan-wars.xml')
+      #LOG_NOTE('Success!')
 
 #####################################################################
 # Combine primary and secondary CW messages if required
       if self.combineCW == 'yes':
         if self.msgEnabledCW == 'yes' and self.msgEnabledSCW == 'yes':
           LOG_NOTE('Combining primary and secondary clanwars messages')
-          self.msgCWmsg = self.msgCWmsg + '\n\n' + self.MsgDivider + '\n\n' + self.msgSCWmsg
+          self.msgCWmsg = self.msgCWmsg + '<br><br>' + self.MsgDivider + '<br><br>' + self.msgSCWmsg
         elif self.msgEnabledCW == 'no' and self.msgEnabledSCW == 'yes':
           LOG_NOTE('Primary clanwars message is disabled, using secondary message instead')
           self.msgCWmsg = self.msgSCWmsg
@@ -380,7 +392,7 @@ class MessageCenter(Thread):
       if self.msgEnabledCW == 'yes' or self.msgEnabledSCW == 'yes':
         self.sys_msg = self.sys_msg + '<br><br><font color="#' + self.CWColor + '">' + self.msgCWmsg + '</font><br><br>' + self.MsgDivider
       if self.msgMOTDEnabled != 'yes' and self.msgMEnabled != 'yes' and self.msgEnabledTourney != 'yes' and self.msgEnabledCW != 'yes' and self.msgEnabledSTourney != 'yes' and self.msgEnabledSCW !='yes':
-        self.sys_msg = self.sys_msg + '<br><br><font color="#FFCC00"><b>' + self.PlaceHolder + '</b></font><br><br>'
+        self.sys_msg = self.sys_msg + '<br><br><font color="#FFCC00"><b>' + self.PlaceHolder + '</b></font><br>'
       LOG_NOTE('Final output:\n%s' % (self.sys_msg))
       BigWorld.flushPythonLog()
       self.msg()
