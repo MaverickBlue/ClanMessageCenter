@@ -1,7 +1,7 @@
 # Embedded file name: msgctr.py
 # File: B (Python 2.7)
 """
- Name: Mav's Clan Message Centre 3.04
+ Name: Mav's Clan Message Centre 3.05
 """
 # Imports
 import BigWorld, os, GUI, urllib, ResMgr, time
@@ -11,7 +11,7 @@ from gui.shared import events
 from Account import Account
 from threading import Thread
 
-LOG_NOTE("Initializing Mav's Clan Message Center 3.04")
+LOG_NOTE("Initializing Mav's Clan Message Center 3.05")
 BigWorld.flushPythonLog()
 
 waitForConnection = Account.onBecomePlayer
@@ -28,6 +28,10 @@ class MessageCenter(Thread):
     self.PrimaryToggle = 'ON'
     self.SecondaryTToggle = 'ON'
     self.SecondaryCWToggle = 'ON'
+    self.hheight = '34'
+    self.hwidth = '220'
+    self.dheight = '10'
+    self.dwidth = '220'
     self.msgMOTDEnabled = 'yes'
     self.msgMOTDmsg = 'Unable to retrieve primary messages'
     self.MOTDcolor = 'FFB300'
@@ -41,11 +45,11 @@ class MessageCenter(Thread):
     self.msgSTourneymsg = ''
     self.msgEnabledSTourney = 'no'
     self.combineTourney = 'yes'
-    self.Tourney_Color = 'FFCC00'
+    self.tourneyColor = 'FFCC00'
     self.msgEnabledSCW = 'no'
     self.msgSCWmsg = ''
     self.combineCW = 'yes'
-    self.CWColor = 'FFCC00'
+    self.cwColor = 'FFCC00'
     self.PlaceHolder = 'Nothing to report at this time'
     self.UpdateCFG = 'no'
     self.modUpdated = 'NO'
@@ -64,18 +68,26 @@ class MessageCenter(Thread):
       except:
         LOG_ERROR('Unable to download replacement msg-ctr.xml')
       self.msgCFGmsg = ResMgr.openSection('scripts/client/mods/msg-ctr.xml')
-      self.rtrURL = self.msgCFGmsg.readString('Primary_Message_Address')
-      self.rtrTournURL = self.msgCFGmsg.readString('Secondary_Tourney_Address')
-      self.rtrCWarsURL = self.msgCFGmsg.readString('Secondary_CW_Address')
-      self.imgHUrl = self.msgCFGmsg.readString('Header_Graphic')
-      self.imgDUrl = self.msgCFGmsg.readString('Divider_Graphic')
+      self.rtrURL = self.msgCFGmsg.readString('Primary_Message_Address').strip()
+      self.rtrTournURL = self.msgCFGmsg.readString('Secondary_Tourney_Address').strip()
+      self.rtrCWarsURL = self.msgCFGmsg.readString('Secondary_CW_Address').strip()
+      self.imgHUrl = self.msgCFGmsg.readString('Header_Graphic').strip()
+      self.hheight = self.msgCFGmsg.readString('Header_Height').strip()
+      self.hwidth = self.msgCFGmsg.readString('Header_Width').strip()
+      self.imgDUrl = self.msgCFGmsg.readString('Divider_Graphic').strip()
+      self.dheight = self.msgCFGmsg.readString('Divider_Height').strip()
+      self.dwidth = self.msgCFGmsg.readString('Divider_Width').strip()
       LOG_NOTE('Downloaded default configuration file')
     else:
-      self.rtrURL = self.msgCFGmsg.readString('Primary_Message_Address')
-      self.rtrTournURL = self.msgCFGmsg.readString('Secondary_Tourney_Address')
-      self.rtrCWarsURL = self.msgCFGmsg.readString('Secondary_CW_Address')
-      self.imgHUrl = self.msgCFGmsg.readString('Header_Graphic')
-      self.imgDUrl = self.msgCFGmsg.readString('Divider_Graphic')
+      self.rtrURL = self.msgCFGmsg.readString('Primary_Message_Address').strip()
+      self.rtrTournURL = self.msgCFGmsg.readString('Secondary_Tourney_Address').strip()
+      self.rtrCWarsURL = self.msgCFGmsg.readString('Secondary_CW_Address').strip()
+      self.imgHUrl = self.msgCFGmsg.readString('Header_Graphic').strip()
+      self.hheight = self.msgCFGmsg.readString('Header_Height').strip()
+      self.hwidth = self.msgCFGmsg.readString('Header_Width').strip()
+      self.imgDUrl = self.msgCFGmsg.readString('Divider_Graphic').strip()
+      self.dheight = self.msgCFGmsg.readString('Divider_Height').strip()
+      self.dwidth = self.msgCFGmsg.readString('Divider_Width').strip()
       LOG_NOTE('----------------------------------------------------------------------------------------------\nOpened msg-ctr.xml: \nPrimary Message URL: %s \nSecondary Tournament URL: %s \nSecondary CW URL: %s \nHeader Graphic: %s \nDivider Graphic: %s' % (self.rtrURL, self.rtrTournURL, self.rtrCWarsURL, self.imgHUrl, self.imgDUrl))
       LOG_NOTE('----------------------------------------------------------------------------------------------')
     self.retrievePrimary()
@@ -119,18 +131,18 @@ class MessageCenter(Thread):
         self.MOTDcolor = self.primaryMsgXML.readString('MOTD_Color').strip()
   # Meetings
         self.msgMEnabled = self.primaryMsgXML.readString('Show_Meeting_Message').strip().lower()
-        self.msgMeeting = self.primaryMsgXML.readString('Clan_Meeting')
+        self.msgMeetingmsg = self.primaryMsgXML.readString('Clan_Meeting')
         self.MeetingColor = self.primaryMsgXML.readString('Meeting_Color').strip()
   # Tournaments
         self.msgEnabledTourney = self.primaryMsgXML.readString('Show_Tourney_Message').strip().lower()
         self.msgTourney = self.primaryMsgXML.readString('Tournament_Battles_Message')
-        self.Tourney_Color= self.primaryMsgXML.readString('Tournament_Color').strip()
+        self.tourneyColor= self.primaryMsgXML.readString('Tournament_Color').strip()
         self.secondaryTourney = self.primaryMsgXML.readString('Enable_Secondary_Tourney').strip().lower()
         self.combineTourney = self.primaryMsgXML.readString('Show_Both_TMessages').strip().lower()
   # Clan Wars
         self.msgEnabledCW = self.primaryMsgXML.readString('Show_Clanwars_Message').strip().lower()
         self.msgCWmsg = self.primaryMsgXML.readString('Clan_Wars_Message')
-        self.CWColor = self.primaryMsgXML.readString('CW_Color').strip()
+        self.cwColor = self.primaryMsgXML.readString('CW_Color').strip()
         self.secondaryCW = self.primaryMsgXML.readString('Show_Secondary_CW').strip().lower()
         self.combineCW = self.primaryMsgXML.readString('Show_Both_CWMessages').strip().lower()
   # msg-ctr.xml status
@@ -148,11 +160,11 @@ class MessageCenter(Thread):
             LOG_NOTE('Updated Mod!')
         except:
           pass
-        LOG_NOTE('----------------------------------------------------------------------------------------------\nSuccessfully read primary.xml, values are: \nAuthor: %s \nShow Author: %s \nCheck Time: %s \nMOTD: %s \nMOTD Enabled: %s \nMeeting Message: %s \nMeeting Message Enabled: %s \n- - -\nTourney Message: %s \nTourney Message Enabled: %s \nSecondary Tourney Message Status: %s \nCombine Both Tourney Messages: %s \n- - -\nClan Wars Message: %s \nClan Wars Message Enabled: %s \nSecondary Clan Wars Message Status: %s \nCombine Both Clan Wars Messages: %s \n- - -\nShould msg-ctr.xml be updated: %s \nLocation to get updated msg-ctr.xml: %s' % (self.Author, self.AuthorEnabled, self.CheckTimer, self.msgMOTDmsg, self.msgMOTDEnabled, self.msgMeeting, self.msgMEnabled, self.msgTourney, self.msgEnabledTourney, self.secondaryTourney, self.combineTourney, self.msgCWmsg, self.msgEnabledCW, self.secondaryCW, self.combineCW, self.UpdateCFG, self.UpdateCFGurl))
-        LOG_NOTE('----------------------------------------------------------------------------------------------\nCOLOR SETTINGS\nAuthor color: %s \nMOTDcolor: %s \nTourney_Color: %s \nCW Color: %s' % (self.authorColor, self.MOTDcolor, self.Tourney_Color, self.CWColor))
+        LOG_NOTE('----------------------------------------------------------------------------------------------\nSuccessfully read primary.xml, values are: \nAuthor: %s \nShow Author: %s \nCheck Time: %s \nMOTD: %s \nMOTD Enabled: %s \nMeeting Message: %s \nMeeting Message Enabled: %s \n- - -\nTourney Message: %s \nTourney Message Enabled: %s \nSecondary Tourney Message Status: %s \nCombine Both Tourney Messages: %s \n- - -\nClan Wars Message: %s \nClan Wars Message Enabled: %s \nSecondary Clan Wars Message Status: %s \nCombine Both Clan Wars Messages: %s \n- - -\nShould msg-ctr.xml be updated: %s \nLocation to get updated msg-ctr.xml: %s' % (self.Author, self.AuthorEnabled, self.CheckTimer, self.msgMOTDmsg, self.msgMOTDEnabled, self.msgMeetingmsg, self.msgMEnabled, self.msgTourney, self.msgEnabledTourney, self.secondaryTourney, self.combineTourney, self.msgCWmsg, self.msgEnabledCW, self.secondaryCW, self.combineCW, self.UpdateCFG, self.UpdateCFGurl))
+        LOG_NOTE('----------------------------------------------------------------------------------------------\nCOLOR SETTINGS\nAuthor color: %s \nMOTDcolor: %s \nTourney_Color: %s \nCW Color: %s' % (self.authorColor, self.MOTDcolor, self.tourneyColor, self.cwColor))
       else:
         LOG_ERROR('Unable to read primary.xml')
-      #LOG_NOTE('Author color: %s \nMOTDcolor: %s \nTourney_Color: %s \nCW Color: %s' % (self.authorColor, self.MOTDcolor, self.Tourney_Color, self.CWColor))
+      #LOG_NOTE('Author color: %s \nMOTDcolor: %s \nTourney_Color: %s \nCW Color: %s' % (self.authorColor, self.MOTDcolor, self.tourneyColor, self.cwColor))
     except:
       LOG_CURRENT_EXCEPTION()
     #LOG_NOTE('Completed parsing primary messages')
@@ -190,7 +202,7 @@ class MessageCenter(Thread):
 # Determine if using local or remote header graphic
 
   def checkMsgGraphics(self):
-    self.MsgHeader = '<img src="img://scripts/client/mods/msg-ctr/msg-ctr-header.png" height="34" width="220">'
+    self.MsgHeader = '<img src="img://scripts/client/mods/msg-ctr/msg-ctr-header.png" height="' + self.hheight + '" width="' + self.hwidth + '">'
     if self.imgHUrl is not None and "http" in self.imgHUrl:
       LOG_NOTE('Downloading header graphic from %s' % (self.imgHUrl))
       try: 
@@ -199,12 +211,12 @@ class MessageCenter(Thread):
         LOG_NOTE('Failed to download header graphic from %s reverting to local copy' % (self.imgHUrl))
       LOG_NOTE('Loaded header graphic from %s' % (self.imgHUrl))
     else:
-      self.MsgHeader = '<img src="' + self.imgHUrl + '" height="34" width="220">'
+      self.MsgHeader = '<img src="' + self.imgHUrl + '" height="' + self.hheight + '" width="' + self.hwidth + '">'
       LOG_NOTE('Using local header %s' % (self.MsgHeader))
 
 #####################################################################
 # Determine if using local or remote divider graphic
-    self.MsgDivider = '<img src="img://scripts/client/mods/msg-ctr/msg-ctr-divider.png" height="10" width="220">'
+    self.MsgDivider = '<img src="img://scripts/client/mods/msg-ctr/msg-ctr-divider.png" height="' + self.dheight + '" width="' + self.dwidth + '">'
     if self.imgDUrl is not None and "http" in self.imgDUrl:
       LOG_NOTE('downloading divider graphic from %s' % (self.imgDUrl))
       try: 
@@ -213,7 +225,7 @@ class MessageCenter(Thread):
         LOG_NOTE('Failed to download divider graphic from %s reverting to local copy' % (self.imgDUrl))
       LOG_NOTE('Loaded divider graphic from %s' % (self.imgDUrl))
     else:
-      self.MsgDivider = '<img src="' + self.imgDUrl + '" height="10" width="220">'
+      self.MsgDivider = '<img src="' + self.imgDUrl + '" height="' + self.dheight + '" width="' + self.dwidth + '">'
       LOG_NOTE('Using local divider %s' % (self.MsgDivider))
     LOG_NOTE('----------------------------------------------------------------------------------------------')
 
@@ -251,7 +263,7 @@ class MessageCenter(Thread):
         if self.msgEnabledTourney == 'yes' and self.msgEnabledSTourney == 'yes':
 #          LOG_NOTE('Primary Tourney Enabled: %s and Secondary Tourney Enabled: %s' % (self.msgEnabledTourney, self.msgEnabledSTourney))
           LOG_NOTE('Combining primary and secondary tournament messages')
-          self.msgTourney = self.msgTourney + '<br><br>' + self.MsgDivider + '<br><br>' + self.msgSTourneymsg
+          self.msgTourney = self.msgTourney + '<br>' + self.MsgDivider + '<br>' + self.msgSTourneymsg
         elif self.msgEnabledTourney == 'no' and self.msgEnabledSTourney == 'yes':
           LOG_NOTE('Primary tournament message is disabled, using secondary message instead')
           self.msgTourney = self.msgSTourneymsg
@@ -298,7 +310,7 @@ class MessageCenter(Thread):
       if self.combineCW == 'yes':
         if self.msgEnabledCW == 'yes' and self.msgEnabledSCW == 'yes':
           LOG_NOTE('Combining primary and secondary clanwars messages')
-          self.msgCWmsg = self.msgCWmsg + '<br><br>' + self.MsgDivider + '<br><br>' + self.msgSCWmsg
+          self.msgCWmsg = self.msgCWmsg + '<br>' + self.MsgDivider + '<br>' + self.msgSCWmsg
         elif self.msgEnabledCW == 'no' and self.msgEnabledSCW == 'yes':
           LOG_NOTE('Primary clanwars message is disabled, using secondary message instead')
           self.msgCWmsg = self.msgSCWmsg
@@ -398,19 +410,19 @@ class MessageCenter(Thread):
       self.type = SystemMessages.SM_TYPE.GameGreeting
       self.sys_msg = self.sys_msg + self.MsgHeader + '<br>' + self.MsgDivider
       if self.msgMOTDEnabled == 'yes':
-        self.sys_msg = self.sys_msg + '<br><br><font color="#' + self.MOTDcolor + '"><b>' + self.msgMOTDmsg + '</b></font>'
+        self.sys_msg = self.sys_msg + '<br><font color="#' + self.MOTDcolor + '"><b>' + self.msgMOTDmsg + '</b></font>'
       if self.AuthorEnabled == 'yes' and self.msgMOTDEnabled == 'yes':
-        self.sys_msg = self.sys_msg + ' -- ' + '<font color="#' + self.authorColor + '">' + self.Author + '</font><br><br>' + self.MsgDivider
+        self.sys_msg = self.sys_msg + ' -- ' + '<font color="#' + self.authorColor + '">' + self.Author + '</font><br>' + self.MsgDivider
       elif self.msgMOTDEnabled == 'yes' and self.AuthorEnabled != 'yes':
-        self.sys_msg = self.sys_msg + '<br><br>' + self.MsgDivider
+        self.sys_msg = self.sys_msg + '<br>' + self.MsgDivider
       if self.msgMEnabled == 'yes':
-        self.sys_msg = self.sys_msg + '<br><br><font color="#' + self.MeetingColor + '">' + self.msgMeeting + '</font><br><br>' + self.MsgDivider
+        self.sys_msg = self.sys_msg + '<br><font color="#' + self.MeetingColor + '">' + self.msgMeetingmsg + '</font><br>' + self.MsgDivider
       if self.msgEnabledTourney == 'yes' or self.msgEnabledSTourney == 'yes':
-        self.sys_msg = self.sys_msg + '<br><br><font color="#' + self.Tourney_Color + '">' + self.msgTourney + '</font><br><br>' + self.MsgDivider
+        self.sys_msg = self.sys_msg + '<br><font color="#' + self.tourneyColor + '">' + self.msgTourney + '</font><br>' + self.MsgDivider
       if self.msgEnabledCW == 'yes' or self.msgEnabledSCW == 'yes':
-        self.sys_msg = self.sys_msg + '<br><br><font color="#' + self.CWColor + '">' + self.msgCWmsg + '</font><br><br>' + self.MsgDivider
+        self.sys_msg = self.sys_msg + '<br><font color="#' + self.cwColor + '">' + self.msgCWmsg + '</font><br>' + self.MsgDivider
       if self.msgMOTDEnabled != 'yes' and self.msgMEnabled != 'yes' and self.msgEnabledTourney != 'yes' and self.msgEnabledCW != 'yes' and self.msgEnabledSTourney != 'yes' and self.msgEnabledSCW !='yes':
-        self.sys_msg = self.sys_msg + '<br><br><font color="#FFCC00"><b>' + self.PlaceHolder + '</b></font><br>'
+        self.sys_msg = self.sys_msg + '<br><font color="#FFCC00"><b>' + self.PlaceHolder + '</b></font><br>'
       LOG_NOTE('Final output:\n%s' % (self.sys_msg))
       BigWorld.flushPythonLog()
       self.msg()
