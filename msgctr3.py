@@ -1,7 +1,7 @@
 # Embedded file name: msgctr.py
 # File: B (Python 2.7)
 """
- Name: Mav's Clan Message Centre 3.03
+ Name: Mav's Clan Message Centre 3.04
 """
 # Imports
 import BigWorld, os, GUI, urllib, ResMgr, time
@@ -11,7 +11,7 @@ from gui.shared import events
 from Account import Account
 from threading import Thread
 
-LOG_NOTE('initializing')
+LOG_NOTE("Initializing Mav's Clan Message Center 3.04")
 BigWorld.flushPythonLog()
 
 waitForConnection = Account.onBecomePlayer
@@ -28,11 +28,26 @@ class MessageCenter(Thread):
     self.PrimaryToggle = 'ON'
     self.SecondaryTToggle = 'ON'
     self.SecondaryCWToggle = 'ON'
+    self.msgMOTDEnabled = 'yes'
+    self.msgMOTDmsg = 'Unable to retrieve primary messages'
+    self.MOTDcolor = 'FFB300'
+    self.AuthorEnabled = 'no'
+    self.msgMEnabled = 'no'
+    self.CheckTimer = 5
+    self.msgEnabledTourney = 'no'
+    self.secondaryTourney = 'yes'
+    self.msgEnabledCW = 'no'
+    self.secondaryCW = 'yes'
     self.msgSTourneymsg = ''
     self.msgEnabledSTourney = 'no'
+    self.combineTourney = 'yes'
+    self.Tourney_Color = 'FFCC00'
     self.msgEnabledSCW = 'no'
     self.msgSCWmsg = ''
+    self.combineCW = 'yes'
+    self.CWColor = 'FFCC00'
     self.PlaceHolder = 'Nothing to report at this time'
+    self.UpdateCFG = 'no'
     self.modUpdated = 'NO'
     self.UpdateMODUrl = ''
 #    self.MsgCTRupdated = 'Mod has updated!'
@@ -66,7 +81,7 @@ class MessageCenter(Thread):
     self.retrievePrimary()
     self.retrieveSecondaryT()
     self.retrieveSecondaryCW()
-    LOG_NOTE('initialized')
+    LOG_NOTE('Initialized')
 #    LOG_NOTE('self.LoggedIn %s \nplayer %s \nsys_msg %s \nself.msgTime %s' % (self.LoggedIn, self.player, self.sys_msg, self.msgTime))
     BigWorld.flushPythonLog()
 
@@ -74,13 +89,13 @@ class MessageCenter(Thread):
 #####################################################################
 # Retrieve primary.xml
   def retrievePrimary(self):
-    LOG_NOTE('Retrieving primary messages')
+    LOG_NOTE('Attempting to retrieve primary messages')
     try:
       urllib.urlretrieve('%s' % (self.rtrURL), "res_mods/0.9.5/scripts/client/mods/msg-ctr/primary.xml")
     except:
       self.PrimaryToggle = 'OFF'
       LOG_ERROR('Unable to retrieve primary message from %s' % (self.rtrURL))
-    LOG_NOTE('Finished retrieving primary messages')
+    LOG_NOTE('Completed')
 
 #####################################################################
 # Parse primary message file
@@ -92,52 +107,55 @@ class MessageCenter(Thread):
     #except:
     #  LOG_NOTE('')
     self.primaryMsgXML = ResMgr.openSection('scripts/client/mods/msg-ctr/primary.xml')
-    if self.primaryMsgXML is not None:
-      self.Author = self.primaryMsgXML.readString('Author')
-      self.authorColor = self.primaryMsgXML.readString('Author_Color').strip()
-      self.AuthorEnabled = self.primaryMsgXML.readString('Show_Author').strip().lower()
-      self.CheckTimer = int(self.primaryMsgXML.readString('Check_Message_Time').strip())
+    try:
+      if self.primaryMsgXML is not None:
+        self.Author = self.primaryMsgXML.readString('Author')
+        self.authorColor = self.primaryMsgXML.readString('Author_Color').strip()
+        self.AuthorEnabled = self.primaryMsgXML.readString('Show_Author').strip().lower()
+        self.CheckTimer = int(self.primaryMsgXML.readString('Check_Message_Time').strip())
   # MOTD
-      self.msgMOTDEnabled = self.primaryMsgXML.readString('Show_MOTD_Message').strip().lower()
-      self.msgMOTDmsg = self.primaryMsgXML.readString('MOTDmsg')
-      self.MOTDcolor = self.primaryMsgXML.readString('MOTD_Color').strip()
+        self.msgMOTDEnabled = self.primaryMsgXML.readString('Show_MOTD_Message').strip().lower()
+        self.msgMOTDmsg = self.primaryMsgXML.readString('MOTDmsg')
+        self.MOTDcolor = self.primaryMsgXML.readString('MOTD_Color').strip()
   # Meetings
-      self.msgMEnabled = self.primaryMsgXML.readString('Show_Meeting_Message').strip().lower()
-      self.msgMeeting = self.primaryMsgXML.readString('Clan_Meeting')
-      self.MeetingColor = self.primaryMsgXML.readString('Meeting_Color').strip()
+        self.msgMEnabled = self.primaryMsgXML.readString('Show_Meeting_Message').strip().lower()
+        self.msgMeeting = self.primaryMsgXML.readString('Clan_Meeting')
+        self.MeetingColor = self.primaryMsgXML.readString('Meeting_Color').strip()
   # Tournaments
-      self.msgEnabledTourney = self.primaryMsgXML.readString('Show_Tourney_Message').strip().lower()
-      self.msgTourney = self.primaryMsgXML.readString('Tournament_Battles_Message')
-      self.Tourney_Color= self.primaryMsgXML.readString('Tournament_Color').strip()
-      self.secondaryTourney = self.primaryMsgXML.readString('Enable_Secondary_Tourney').strip().lower()
-      self.combineTourney = self.primaryMsgXML.readString('Show_Both_TMessages').strip().lower()
+        self.msgEnabledTourney = self.primaryMsgXML.readString('Show_Tourney_Message').strip().lower()
+        self.msgTourney = self.primaryMsgXML.readString('Tournament_Battles_Message')
+        self.Tourney_Color= self.primaryMsgXML.readString('Tournament_Color').strip()
+        self.secondaryTourney = self.primaryMsgXML.readString('Enable_Secondary_Tourney').strip().lower()
+        self.combineTourney = self.primaryMsgXML.readString('Show_Both_TMessages').strip().lower()
   # Clan Wars
-      self.msgEnabledCW = self.primaryMsgXML.readString('Show_Clanwars_Message').strip().lower()
-      self.msgCWmsg = self.primaryMsgXML.readString('Clan_Wars_Message')
-      self.CWColor = self.primaryMsgXML.readString('CW_Color').strip()
-      self.secondaryCW = self.primaryMsgXML.readString('Show_Secondary_CW').strip().lower()
-      self.combineCW = self.primaryMsgXML.readString('Show_Both_CWMessages').strip().lower()
+        self.msgEnabledCW = self.primaryMsgXML.readString('Show_Clanwars_Message').strip().lower()
+        self.msgCWmsg = self.primaryMsgXML.readString('Clan_Wars_Message')
+        self.CWColor = self.primaryMsgXML.readString('CW_Color').strip()
+        self.secondaryCW = self.primaryMsgXML.readString('Show_Secondary_CW').strip().lower()
+        self.combineCW = self.primaryMsgXML.readString('Show_Both_CWMessages').strip().lower()
   # msg-ctr.xml status
-      self.UpdateCFG = self.primaryMsgXML.readString('Update_Mod_Config')
-      self.UpdateCFGurl = self.primaryMsgXML.readString('Config_Update_Address')
+        self.UpdateCFG = self.primaryMsgXML.readString('Update_Mod_Config')
+        self.UpdateCFGurl = self.primaryMsgXML.readString('Config_Update_Address')
   # is update tag present?
-      try:
-        self.UpdateMODUrl = self.primaryMsgXML.readString('Update_Mod_URL')
-        if 'http' in self.UpdateMODUrl:
-          try:
-            urllib.urlretrieve('%s' % (self.UpdateMODUrl), "res_mods/0.9.5/scripts/client/mods/msgctr.pyc")
-          except:
-            LOG_CURRENT_EXCEPTION()
-          self.modUpdated = 'YES'
-          LOG_NOTE('Updated Mod!')
-      except:
-        pass
-      LOG_NOTE('----------------------------------------------------------------------------------------------\nSuccessfully read primary.xml, values are: \nAuthor: %s \nShow Author: %s \nCheck Time: %s \nMOTD: %s \nMOTD Enabled: %s \nMeeting Message: %s \nMeeting Message Enabled: %s \n- - -\nTourney Message: %s \nTourney Message Enabled: %s \nSecondary Tourney Message Status: %s \nCombine Both Tourney Messages: %s \n- - -\nClan Wars Message: %s \nClan Wars Message Enabled: %s \nSecondary Clan Wars Message Status: %s \nCombine Both Clan Wars Messages: %s \n- - -\nShould msg-ctr.xml be updated: %s \nLocation to get updated msg-ctr.xml: %s' % (self.Author, self.AuthorEnabled, self.CheckTimer, self.msgMOTDmsg, self.msgMOTDEnabled, self.msgMeeting, self.msgMEnabled, self.msgTourney, self.msgEnabledTourney, self.secondaryTourney, self.combineTourney, self.msgCWmsg, self.msgEnabledCW, self.secondaryCW, self.combineCW, self.UpdateCFG, self.UpdateCFGurl))
-      LOG_NOTE('----------------------------------------------------------------------------------------------\nCOLOR SETTINGS\nAuthor color: %s \nMOTDcolor: %s \nTourney_Color: %s \nCW Color: %s' % (self.authorColor, self.MOTDcolor, self.Tourney_Color, self.CWColor))
-    else:
-      LOG_ERROR('Unable to read primary.xml')
+        try:
+          self.UpdateMODUrl = self.primaryMsgXML.readString('Update_Mod_URL')
+          if 'http' in self.UpdateMODUrl:
+            try:
+              urllib.urlretrieve('%s' % (self.UpdateMODUrl), "res_mods/0.9.5/scripts/client/mods/msgctr.pyc")
+            except:
+              LOG_CURRENT_EXCEPTION()
+            self.modUpdated = 'YES'
+            LOG_NOTE('Updated Mod!')
+        except:
+          pass
+        LOG_NOTE('----------------------------------------------------------------------------------------------\nSuccessfully read primary.xml, values are: \nAuthor: %s \nShow Author: %s \nCheck Time: %s \nMOTD: %s \nMOTD Enabled: %s \nMeeting Message: %s \nMeeting Message Enabled: %s \n- - -\nTourney Message: %s \nTourney Message Enabled: %s \nSecondary Tourney Message Status: %s \nCombine Both Tourney Messages: %s \n- - -\nClan Wars Message: %s \nClan Wars Message Enabled: %s \nSecondary Clan Wars Message Status: %s \nCombine Both Clan Wars Messages: %s \n- - -\nShould msg-ctr.xml be updated: %s \nLocation to get updated msg-ctr.xml: %s' % (self.Author, self.AuthorEnabled, self.CheckTimer, self.msgMOTDmsg, self.msgMOTDEnabled, self.msgMeeting, self.msgMEnabled, self.msgTourney, self.msgEnabledTourney, self.secondaryTourney, self.combineTourney, self.msgCWmsg, self.msgEnabledCW, self.secondaryCW, self.combineCW, self.UpdateCFG, self.UpdateCFGurl))
+        LOG_NOTE('----------------------------------------------------------------------------------------------\nCOLOR SETTINGS\nAuthor color: %s \nMOTDcolor: %s \nTourney_Color: %s \nCW Color: %s' % (self.authorColor, self.MOTDcolor, self.Tourney_Color, self.CWColor))
+      else:
+        LOG_ERROR('Unable to read primary.xml')
       #LOG_NOTE('Author color: %s \nMOTDcolor: %s \nTourney_Color: %s \nCW Color: %s' % (self.authorColor, self.MOTDcolor, self.Tourney_Color, self.CWColor))
-    LOG_NOTE('Completed parsing primary messages')
+    except:
+      LOG_CURRENT_EXCEPTION()
+    #LOG_NOTE('Completed parsing primary messages')
     LOG_NOTE('----------------------------------------------------------------------------------------------')
     if self.UpdateCFG == 'yes':
       self.UpdateMSGConfig()
@@ -322,7 +340,7 @@ class MessageCenter(Thread):
       BigWorld.flushPythonLog()
     else:
       self.difTime = self.nowTime - self.msgTime
-      LOG_NOTE('\nself.msgTime is %s \nself.nowTime: %s \nself.difTime: %s' % (self.msgTime, self.nowTime, self.difTime))
+      LOG_NOTE('\nLast message time was %s \nCurrent time is: %s \nDifference of: %s' % (self.msgTime, self.nowTime, self.difTime))
       BigWorld.flushPythonLog()
 
     if self.initialMSG == True:
@@ -332,7 +350,7 @@ class MessageCenter(Thread):
       self.initialMSG = False
       self.messaging()
     elif self.difTime >= self.CheckTimer:
-      LOG_NOTE('self.difTime is greater than %s' % (self.CheckTimer))
+      LOG_NOTE('Difference is greater than %s, re-checking messages' % (self.CheckTimer))
       BigWorld.flushPythonLog()
       self.msgTime = int(time.strftime("%H")) * 60 + int(time.strftime("%M"))
       self.erase()
@@ -341,7 +359,7 @@ class MessageCenter(Thread):
       self.retrieveSecondaryCW()
       self.messaging()
     else:
-      LOG_NOTE('self.difTime is less than %s' % (self.CheckTimer))
+      LOG_NOTE('Difference is less than %s' % (self.CheckTimer))
       BigWorld.flushPythonLog()
 
 #######################################################
