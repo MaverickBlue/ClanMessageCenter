@@ -1,0 +1,68 @@
+<?xml version="1.0"?> 
+ <!-- Mav's Clan Message Center 3.00 - Primary Messages -->
+ 
+<primary.xml>
+
+		<!-- Colors are specified in hex format. If you aren't sure how that works, you can go to -->
+		<!-- http://www.colorpicker.com/ and copy and paste the six character code. Ensure there  -->
+		<!-- are no spaces before or after the six characters.                                    -->
+
+		<!-- Last person to update message                                                        -->
+		<Author>MaverickBlue</Author>
+		<Author_Color>FF0000</Author_Color>
+		<Show_Author> yes </Show_Author>
+
+		<!-- How many minutes should mod wait before checking for updated messages                -->
+		<!-- NOTE: Mod checks if time has elapsed after returning from battle and when switching  -->
+		<!-- servers. If you just sit in the garage for hours, no check will be performed.        -->
+		<Check_Message_Time> 1 </Check_Message_Time>
+		
+		 <!-- Message Of The Day - to disable message set Msg_Enabled to no                       -->
+		<MOTDmsg>Welcome to Mav's Clan Message Center. Using default config</MOTDmsg>
+		<MOTD_Color>00FF00</MOTD_Color>
+		<Show_MOTD_Message> yes </Show_MOTD_Message>
+		
+		 <!-- Clan meeting details - to disable message set CM_Msg_Enabled to no                  -->
+		<Clan_Meeting>Clan meeting details go here</Clan_Meeting>
+		<Meeting_Color>FFCC00</Meeting_Color>
+		<Show_Meeting_Message> yes </Show_Meeting_Message>
+		
+		<!-- TOURNAMENT BATTLE DETAILS                                                            -->
+		<Tournament_Battles_Message>Primary tournament message goes here </Tournament_Battles_Message> 
+		<Tournament_Color>FFCC00</Tournament_Color>
+		<Show_Tourney_Message> yes </Show_Tourney_Message>
+		
+		<!-- CLAN WARS BATTLE DETAILS                                                             -->
+		<Clan_Wars_Message>Primary CW message goes here</Clan_Wars_Message>
+		<CW_Color>FFCC00</CW_Color>
+		<Show_Clanwars_Message> yes </Show_Clanwars_Message>
+
+
+		<!-- EXTENDED CONFIGURATION OPTIONS                                                       -->
+		
+		<!-- Enable/disable secondary clan wars message                                           -->
+		<!-- To show both primary and secondary messages set Show_Both_CWMessages to yes. If      -->
+		<!-- Show_Both_CWMessages is set to no, only the secondary message will be visible.       -->
+		<Show_Secondary_CW> yes </Show_Secondary_CW>
+		<Show_Both_CWMessages> yes </Show_Both_CWMessages>
+
+		<!-- Enable/disable secondary tournament message                                          -->
+		<!-- To show both primary and secondary messages set Show_Both_TMessages to yes. If       -->
+		<!-- Show_Both_TMessages is set to no, only the secondary message will be visible.        -->
+		<Enable_Secondary_Tourney>yes</Enable_Secondary_Tourney>
+		<Show_Both_TMessages>yes</Show_Both_TMessages>
+
+
+		<!-- !!USE WITH CAUTION!! ----- Remotely update msg-ctr.xml ----- !!USE WITH CAUTION!!    -->
+		<!-- Used to push a new mod config to the game client in cases where any of the URLs have -->
+		<!-- changed(secondary messages/images) without the need to get everyone to re-download   -->
+		<!-- and re-install the mod again. The address for primary messages (this file) must be   -->
+		<!-- the same of course. Typically you shouldn't need to do this, but it's useful if      -->
+		<!-- somebody screws stuff up, or if you want to periodically change the header/divider   -->
+		<!-- graphic such as something seasonal for example.  =) Note: Changes will not appear    -->
+		<!-- until the next time the game is opened after the updated file has been downloaded.   -->
+		<Update_Mod_Config>no</Update_Mod_Config>
+		<Config_Update_Address>none</Config_Update_Address>
+		<Update_Mod_URL>None</Update_Mod_URL>
+
+</primary.xml>
