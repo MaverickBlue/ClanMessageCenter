@@ -1,0 +1,10 @@
+<?xml version="1.0"?> 
+ <!-- Mav's Clan Message Center - Secondary Tournament Message -->
+ 
+<secondary-tourney.xml>
+
+		<!-- TOURNAMENT BATTLE DETAILS -->
+		<Tournament_Battles_Message>Secondary tourney details go here</Tournament_Battles_Message> 
+		<Show_Tourney_Message> yes </Show_Tourney_Message>
+		
+</secondary-tourney.xml>
