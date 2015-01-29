@@ -1,0 +1,10 @@
+<?xml version="1.0"?> 
+ <!-- Mav's Clan Message Center - Secondary Clan Wars Message -->
+ 
+<secondary-clan-wars.xml>
+
+		<!-- CLAN WARS BATTLE DETAILS -->
+		<Clan_Wars_Message>Secondary CW details go here</Clan_Wars_Message> 
+		<Show_Clanwars_Message> yes </Show_Clanwars_Message>
+		
+</secondary-clan-wars.xml>
