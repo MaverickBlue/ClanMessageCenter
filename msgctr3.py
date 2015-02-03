@@ -56,36 +56,33 @@ class MessageCenter(Thread):
     self.UpdateMODUrl = ''
 #    self.MsgCTRupdated = 'Mod has updated!'
     # Create folder if necessary
-    
     wotVersionCheck = ResMgr.openSection('../version.xml')
     try:
       self.wotVersion = wotVersionCheck.readString('version')
       self.wotVersion = self.wotVersion.split('#', 1)[0]
       self.wotVersion = self.wotVersion.split('v.', 1)[-1]
       self.wotVersion = self.wotVersion.strip()
-      self.scriptFolder = 'res_mods/' + self.wotVersion + '/scripts/client/mods'
-      self.modFolder = self.scriptFolder + '/msg-ctr'
-      self.msgCTRxml = self.scriptFolder + '/msg-ctr.xml'
+      self.scriptFolder = 'res_mods/' + self.wotVersion + '/scripts/client/mods/'
+      self.modFolder = self.scriptFolder + 'msg-ctr/'
+      self.msgCTRxml = self.scriptFolder + 'msg-ctr.xml'
       self.pMsgXML = self.modFolder + 'primary.xml'
       self.stMsgXML = self.modFolder + 'secondary-tourney.xml'
       self.scwMsgXML = self.modFolder + 'secondary-clan-wars.xml'
       self.uMODsave = self.scriptFolder + 'msgctr.pyc'
       self.hpath = self.modFolder + 'msg-ctr-header.png'
       self.dpath = self.modFolder + 'msg-ctr-divider.png'
-      LOG_ERROR('%s' % (self.modFolder))
+      #LOG_ERROR('%s' % (self.modFolder))
     except:
       pass
     if not os.path.exists(self.modFolder):
       LOG_NOTE('Creating directory to store messages')
       os.makedirs(self.modFolder)
     # Parse config
-    
     self.msgCFGmsg = ResMgr.openSection('scripts/client/mods/msg-ctr.xml')
     if self.msgCFGmsg is None:
       LOG_ERROR('Unable to open msg-ctr.xml, attempting to download default configuration')
       try:
-        
-        LOG_ERROR('%s' % (self.msgCTRxml))
+        # LOG_ERROR('%s' % (self.msgCTRxml))
         BigWorld.flushPythonLog()
         urllib.urlretrieve("http://pastebin.com/raw.php?i=HT5NU2D5", self.msgCTRxml)
       except:
