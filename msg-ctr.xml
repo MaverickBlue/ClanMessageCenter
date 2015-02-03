@@ -1,31 +1,31 @@
 <?xml version="1.0"?> 
- <!-- Mav's Clan Message Center 3.05 - Configuration -->
+ <!-- Mav's Clan Message Center 3.06 - Configuration -->
 
 <msg-ctr.xml>
 
 	<!-- Web address for primary message file -->
-	<Primary_Message_Address>http://maverickblue.savage.nu/msg/primary.xml</Primary_Message_Address>
+	<Primary_Message_Address>http://pastebin.com/raw.php?i=eYSXpfgD</Primary_Message_Address>
 
 	<!-- Header graphic -->
 	<!-- Default dimensions: Height 34 Width 220 -->
 	<!-- For local header image, use this format instead: img://scripts/client/mods/msg-ctr/msg-ctr-header.png -->
-	<Header_Graphic>img://scripts/client/mods/msg-ctr/msg-ctr-header.png</Header_Graphic>
+	<Header_Graphic>http://i.imgur.com/xSH9YWB.png</Header_Graphic>
 	<Header_Height> 34  </Header_Height>
 	<Header_Width> 220 </Header_Width>
 
 	<!-- Divider graphic -->
 	<!-- Default dimensions: Height 20 Width 220 -->
 	<!-- For local divider image, use this format instead: img://scripts/client/mods/msg-ctr/msg-ctr-divider.png -->
-	<Divider_Graphic>img://scripts/client/mods/msg-ctr/msg-ctr-divider.png</Divider_Graphic>
+	<Divider_Graphic>http://i.imgur.com/LBcfjQ6.png</Divider_Graphic>
 	<Divider_Height> 20 </Divider_Height>
 	<Divider_Width> 220 </Divider_Width>
 
 	<!-- EXTENDED CONFIGURATION OPTIONS -->
 
 	<!-- Web address for secondary tournament details -->
-	<Secondary_Tourney_Address>http://maverickblue.savage.nu/msg/secondary-tourney.xml</Secondary_Tourney_Address>
+	<Secondary_Tourney_Address>http://pastebin.com/raw.php?i=Yf9dBAYW</Secondary_Tourney_Address>
 	<!-- Web address for secondary clan wars details -->
-	<Secondary_CW_Address>http://maverickblue.savage.nu/msg/secondary-clan-wars.xml</Secondary_CW_Address>
+	<Secondary_CW_Address>http://pastebin.com/raw.php?i=4vxAkcyY</Secondary_CW_Address>
 	
 
 </msg-ctr.xml>
