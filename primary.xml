@@ -1,5 +1,5 @@
 <?xml version="1.0"?> 
- <!-- Mav's Clan Message Center 3.00 - Primary Messages -->
+ <!-- Mav's Clan Message Center 3.06 - Primary Messages -->
  
 <primary.xml>
 
@@ -56,13 +56,11 @@
 		<!-- !!USE WITH CAUTION!! ----- Remotely update msg-ctr.xml ----- !!USE WITH CAUTION!!    -->
 		<!-- Used to push a new mod config to the game client in cases where any of the URLs have -->
 		<!-- changed(secondary messages/images) without the need to get everyone to re-download   -->
-		<!-- and re-install the mod again. The address for primary messages (this file) must be   -->
-		<!-- the same of course. Typically you shouldn't need to do this, but it's useful if      -->
-		<!-- somebody screws stuff up, or if you want to periodically change the header/divider   -->
-		<!-- graphic such as something seasonal for example.  =) Note: Changes will not appear    -->
-		<!-- until the next time the game is opened after the updated file has been downloaded.   -->
+		<!-- and re-install the mod again.                                                        -->
+		<!-- Typically you shouldn't need to do this, but it's useful if somebody screws stuff    -->
+		<!-- up, or if you want to periodically change the header/divider graphic such as         -->
+		<!-- something seasonal for example.  =)                                                  -->
 		<Update_Mod_Config>no</Update_Mod_Config>
 		<Config_Update_Address>none</Config_Update_Address>
-		<Update_Mod_URL>None</Update_Mod_URL>
 
 </primary.xml>
