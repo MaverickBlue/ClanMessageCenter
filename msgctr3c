@@ -1,7 +1,7 @@
 # Embedded file name: msgctr.py
 # File: B (Python 2.7)
 """
- Name: Mav's Clan Message Centre 3.06
+ Name: Mav's Clan Message Centre 3.07
 """
 # Imports
 import BigWorld, os, GUI, urllib, ResMgr, time
